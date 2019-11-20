@@ -86,16 +86,46 @@ dist = cv.distanceTransform(binary, cv.DIST_L2, 3)
 cv.normalize(dist, dist, 0, 1.0, cv.NORM_MINMAX)
 cv.imshow('Distance Transform Image', dist)
 
-
 ## --- task7 - в каждом пикселе фильтрация усреднением
-kernel = np.ones((5, 5), np.float32)/25
-dst = cv.filter2D(image, -1, kernel)
+# kernel = np.ones((5, 5), np.float32)/25
+# dst = cv.filter2D(image, -1, kernel) # or use # blur = cv.blur(image, (5, 5)), но результат идентичный
+# plt.subplot(121), plt.imshow(image), plt.title('Original')
+# plt.xticks([]), plt.yticks([])
+# plt.subplot(122), plt.imshow(dst), plt.title('Averaging')
+# plt.xticks([]), plt.yticks([])
+# plt.show() #для визуализации и удобного сравнения
 
-plt.subplot(121), plt.imshow(image), plt.title('Original')
-plt.xticks([]), plt.yticks([])
-plt.subplot(122), plt.imshow(dst), plt.title('Averaging')
-plt.xticks([]), plt.yticks([])
-plt.show()
+# blur = cv.blur(image, (5, 5))
+# cv.imshow("blur", blur)
+
+
+def dist_mask(mask, max_dist=10):
+    mask = mask.astype(np.uint8)
+
+    def get_dist(m):
+        d = cv.distanceTransform(m, cv.DIST_L2, maskSize=3)
+        d[d > max_dist] = max_dist
+        return d / max_dist
+
+    dist = get_dist(mask) - get_dist(1 - mask)
+
+    return (1 + dist) / 2
+
+def smoothBy_Averaging(image, kernelX, kernelY):
+    """https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_imgproc/py_filtering/py_filtering.html """
+    blur = cv.blur(image, (int(kernelX), int(kernelY)))
+    return blur
+
+height = np.size(image, 0)
+width = np.size(image, 1)
+
+for y in range(0, height-1):
+        for x in range(0, width-1):
+            #pixel = image[i, j]
+            imageBlur = smoothBy_Averaging(image, dist, dist)
+
+cv.imshow("blur", imageBlur)
+
 
 
 ## --- task8 - интегральные изображения в фильтрации усреднением
