@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-import argparse
+from matplotlib import pyplot as plt
 
 ## --- task1 - оригинальное изображение
 imageSource = '/home/ekolosova/Desktop/bear.jpeg'
@@ -88,7 +88,14 @@ cv.imshow('Distance Transform Image', dist)
 
 
 ## --- task7 - в каждом пикселе фильтрация усреднением
+kernel = np.ones((5, 5), np.float32)/25
+dst = cv.filter2D(image, -1, kernel)
 
+plt.subplot(121), plt.imshow(image), plt.title('Original')
+plt.xticks([]), plt.yticks([])
+plt.subplot(122), plt.imshow(dst), plt.title('Averaging')
+plt.xticks([]), plt.yticks([])
+plt.show()
 
 
 ## --- task8 - интегральные изображения в фильтрации усреднением
