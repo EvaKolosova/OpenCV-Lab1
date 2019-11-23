@@ -39,7 +39,7 @@ def limit(value, min, max):
     return value
 
 
-def averageIntegral(data, dist, clear_image, k=150):
+def average(data, dist, clear_image, k=150):
     res_image = data.copy()
 
     for x in range(data.shape[0]):
