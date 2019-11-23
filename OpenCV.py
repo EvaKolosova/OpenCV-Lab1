@@ -1,8 +1,5 @@
-import time
-
 import cv2 as cv
 import numpy as np
-from matplotlib import pyplot as plt
 
 
 def cornerHarris_demo(thresh):
@@ -61,35 +58,20 @@ def average(data, dist, clear_image, k=150):
 
     return res_image
 
-
-def average(data, dist, k=150):
-    res_image = data.copy()
-
-    for x in range(data.shape[0]):
-        for y in range(data.shape[1]):
-
-            step = int(k * dist[x][y] / 2)
-
-            if(step != 0):
-                res_image[x][y] = cv.blur(res_image[x][y], step)
-
-    return res_image
-
-
-## --- task1 - оригинальное изображение
+## --- оригинальное изображение
 imageSource = '/home/ekolosova/Desktop/bear.jpg'
 image = cv.imread(imageSource)
 
 if image is not None:
     cv.imshow('Original image', image)  ## вывод исходного изображения
 
-    ## --- task2 - полутоновое изображение
+    ## --- полутоновое изображение
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     cv.imshow('Gray sample', gray)  ## вывод полутонового изображения
 elif image is None:
     print("Error loading image")
 
-## --- task3 - улучшенная контрастность
+## --- улучшенная контрастность
 clahe = cv.createCLAHE(clipLimit=3., tileGridSize=(8, 8))  # CLAHE (Contrast Limited Adaptive Histogram Equalization)
 
 lab = cv.cvtColor(image, cv.COLOR_BGR2LAB)  # convert from BGR to LAB color space
@@ -101,13 +83,13 @@ lab = cv.merge((l2, a, b))  # merge channels
 image2 = cv.cvtColor(lab, cv.COLOR_LAB2BGR)  # convert from LAB to BGR
 cv.imshow('Increased contrast', image2)  ## изображение с улучшеным контрастом
 
-## --- task4 - Canny - края обьектов
+## --- Canny - края обьектов
 edges = cv.Canny(image, 80, 150)
 print("edges", edges)
 cv.imshow('Edges from Canny', edges)  ## изображение с Canny - края обьектов
 edges_temp = cv.bitwise_not(edges)
 
-## --- task5 - угловые точки обьектов, нарисовать кругом с радиусом=2 в изображение с краями
+## --- угловые точки обьектов, нарисовать кругом с радиусом=2 в изображение с краями
 source_window = 'Source image'
 corners_window = 'Corners detected'
 max_thresh = 255
@@ -119,7 +101,7 @@ cv.createTrackbar('Threshold: ', source_window, thresh, max_thresh, cornerHarris
 cv.imshow(source_window, image)
 cornerHarris_demo(thresh)
 
-## --- task6 - для границ и угловых точек построить карту расстояний
+## --- для границ и угловых точек построить карту расстояний
 # data = np.array(gray)
 # ret, binary = cv.threshold(data, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU) #пороговое=бинарное изображение
 # cv.imshow('Binary image', binary)
@@ -130,14 +112,9 @@ print("dist_transform", dist_not_norm)
 cv.normalize(dist_not_norm, dist_not_norm, 0, 1.0, cv.NORM_MINMAX)
 cv.imshow('Distance Transform Image', dist_not_norm)
 
-## --- task7 - в каждом пикселе фильтрация усреднением
-blur_image = average(gray, dist)
-
-cv.imshow("Blur", cv.UMat(blur_image))
-
-## --- task8 - интегральные изображения в фильтрации усреднением
+## --- интегральные изображения в фильтрации усреднением
 integral_image = cv.integral(gray)
-blur_image_int = averageIntegral(gray, dist, integral_image)
+blur_image_int = average(gray, dist, integral_image)
 
 cv.imshow("Blur with integral image", cv.UMat(blur_image_int))
 
